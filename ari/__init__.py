@@ -2,15 +2,18 @@
 # Copyright (c) 2013, Digium, Inc.
 #
 
-"""ARI client library
-"""
+"""ARI client library"""
 
-import ari.client
-import swaggerpy.http_client
 import six.moves.urllib as urllib
+import swaggerpy.http_client
 
-Client = client.Client
+from ._version import __version__
+from .client import Client
 
+__all__ = [
+    "__version__",
+    "connect",
+]
 
 def connect(base_url, username, password):
     """Helper method for easily connecting to ARI.
