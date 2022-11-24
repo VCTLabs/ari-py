@@ -15,6 +15,7 @@ __all__ = [
     "connect",
 ]
 
+
 def connect(base_url, username, password):
     """Helper method for easily connecting to ARI.
 

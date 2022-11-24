@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-"""Example demonstrating using the returned object from an API call.
+"""
+Example demonstrating using the returned object from an API call.
 
 This app plays demo-contrats on any channel sent to Stasis(hello). DTMF keys
 are used to control the playback.
@@ -11,8 +10,10 @@ are used to control the playback.
 #
 
 from __future__ import print_function
-import ari
+
 import sys
+
+import ari
 
 client = ari.connect('http://localhost:8088/', 'hey', 'peekaboo')
 

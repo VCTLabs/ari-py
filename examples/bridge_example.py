@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-"""Short example of how to use bridge objects.
+"""
+Short example of how to use bridge objects.
 
 This example will create a holding bridge (if one doesn't already exist). Any
 channels that enter Stasis is placed into the bridge. Whenever a channel
@@ -12,6 +11,7 @@ enters the bridge, a tone is played to the bridge.
 #
 
 from __future__ import print_function
+
 import ari
 
 client = ari.connect('http://localhost:8088/', 'hey', 'peekaboo')
@@ -19,8 +19,7 @@ client = ari.connect('http://localhost:8088/', 'hey', 'peekaboo')
 #
 # Find (or create) a holding bridge.
 #
-bridges = [b for b in client.bridges.list() if
-           b.json['bridge_type'] == 'holding']
+bridges = [b for b in client.bridges.list() if b.json['bridge_type'] == 'holding']
 if bridges:
     bridge = bridges[0]
     print("Using bridge %s" % bridge.id)

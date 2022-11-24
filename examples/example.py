@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-"""Brief example of using the channel API.
+"""
+Brief example of using the channel API.
 
 This app will answer any channel sent to Stasis(hello), and play "Hello,
 world" to the channel. For any DTMF events received, the number is played back
