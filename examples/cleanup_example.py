@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
-"""ARI resources may be closed, if an application only needs them temporarily.
+"""
+ARI resources may be closed, if an application only needs them temporarily.
 """
 
 #
@@ -8,10 +7,13 @@
 #
 
 from __future__ import print_function
-import ari
+
 import logging
 import sys
+
 import six.moves._thread as thread
+
+import ari
 
 logging.basicConfig()
 
@@ -61,8 +63,7 @@ sync = thread.allocate_lock()
 
 
 def run():
-    """Thread for running the Websocket.
-    """
+    """Thread for running the Websocket."""
     sync.acquire()
     client.run(apps="hello")
     sync.release()

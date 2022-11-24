@@ -1,18 +1,18 @@
-#!/usr/bin/env python
-
-"""Example demonstrating ARI channel origination.
+"""
+Example demonstrating ARI channel origination.
 
 """
 
 #
 # Copyright (c) 2013, Digium, Inc.
 #
-import requests
 
 from __future__ import print_function
-import ari
 
+import requests
 from requests import HTTPError
+
+import ari
 
 OUTGOING_ENDPOINT = "SIP/blink"
 
@@ -21,8 +21,7 @@ client = ari.connect('http://localhost:8088/', 'hey', 'peekaboo')
 #
 # Find (or create) a holding bridge.
 #
-bridges = [b for b in client.bridges.list()
-           if b.json['bridge_type'] == 'holding']
+bridges = [b for b in client.bridges.list() if b.json['bridge_type'] == 'holding']
 if bridges:
     holding_bridge = bridges[0]
     print("Using bridge %s" % holding_bridge.id)
@@ -65,14 +64,14 @@ def on_start(incoming, event):
 
     # Originate the outgoing channel
     outgoing = client.channels.originate(
-        endpoint=OUTGOING_ENDPOINT, app="hello", appArgs="dialed")
+        endpoint=OUTGOING_ENDPOINT, app="hello", appArgs="dialed"
+    )
 
     # If the incoming channel ends, hangup the outgoing channel
     incoming.on_event('StasisEnd', lambda *args: safe_hangup(outgoing))
     # and vice versa. If the endpoint rejects the call, it is destroyed
     # without entering Stasis()
-    outgoing.on_event('ChannelDestroyed',
-                      lambda *args: safe_hangup(incoming))
+    outgoing.on_event('ChannelDestroyed', lambda *args: safe_hangup(incoming))
 
     def outgoing_on_start(channel, event):
         """Callback for StasisStart events on the outgoing channel

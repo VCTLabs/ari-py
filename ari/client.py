@@ -6,12 +6,22 @@
 
 import json
 import logging
+from collections import defaultdict
+
 import six.moves.urllib as urllib
 import swaggerpy.client
 
-from collections import defaultdict
-
-from ari.model import *
+from .model import (
+    Bridge,
+    Channel,
+    DeviceState,
+    Endpoint,
+    LiveRecording,
+    Playback,
+    Repository,
+    Sound,
+    StoredRecording,
+)
 
 log = logging.getLogger(__name__)
 
@@ -27,16 +37,18 @@ class Client(object):
         self.base_url = base_url
         url = urllib.parse.urljoin(base_url, "ari/api-docs/resources.json")
 
-        self.swagger = swaggerpy.client.SwaggerClient(
-            url, http_client=http_client)
+        self.swagger = swaggerpy.client.SwaggerClient(url, http_client=http_client)
         self.repositories = {
             name: Repository(self, name, api)
-            for (name, api) in self.swagger.resources.items()}
+            for (name, api) in self.swagger.resources.items()
+        }
 
         # Extract models out of the events resource
-        events = [api['api_declaration']
-                  for api in self.swagger.api_docs['apis']
-                  if api['name'] == 'events']
+        events = [
+            api['api_declaration']
+            for api in self.swagger.api_docs['apis']
+            if api['name'] == 'events'
+        ]
         if events:
             self.event_models = events[0]['models']
         else:
@@ -44,8 +56,9 @@ class Client(object):
 
         self.websockets = set()
         self.event_listeners = {}
-        self.exception_handler = \
-            lambda ex: log.exception("Event listener threw exception")
+        self.exception_handler = lambda ex: log.exception(
+            "Event listener threw exception"
+        )
         self._app_registered_callbacks = defaultdict(list)
         self._app_deregistered_callbacks = defaultdict(list)
 
@@ -56,8 +69,7 @@ class Client(object):
         """
         repo = self.get_repo(item)
         if not repo:
-            raise AttributeError(
-                "'%r' object has no attribute '%s'" % (self, item))
+            raise AttributeError("'%r' object has no attribute '%s'" % (self, item))
         return repo
 
     def close(self):
@@ -171,19 +183,18 @@ class Client(object):
         client = self
 
         class EventUnsubscriber(object):
-            """Class to allow events to be unsubscribed.
-            """
+            """Class to allow events to be unsubscribed."""
 
             def close(self):
-                """Unsubscribe the associated event callback.
-                """
+                """Unsubscribe the associated event callback."""
                 if callback_obj in client.event_listeners[event_type]:
                     client.event_listeners[event_type].remove(callback_obj)
 
         return EventUnsubscriber()
 
-    def on_object_event(self, event_type, event_cb, factory_fn, model_id,
-                        *args, **kwargs):
+    def on_object_event(
+        self, event_type, event_cb, factory_fn, model_id, *args, **kwargs
+    ):
         """Register callback for events with the given type. Event fields of
         the given model_id type are passed along to event_cb.
 
@@ -204,11 +215,13 @@ class Client(object):
             raise ValueError("Cannot find event model '%s'" % event_type)
 
         # Extract the fields that are of the expected type
-        obj_fields = [k for (k, v) in event_model['properties'].items()
-                      if v['type'] == model_id]
+        obj_fields = [
+            k for (k, v) in event_model['properties'].items() if v['type'] == model_id
+        ]
         if not obj_fields:
-            raise ValueError("Event model '%s' has no fields of type %s"
-                             % (event_type, model_id))
+            raise ValueError(
+                "Event model '%s' has no fields of type %s" % (event_type, model_id)
+            )
 
         def extract_objects(event, *args, **kwargs):
             """Extract objects of a given type from an event.
@@ -219,9 +232,11 @@ class Client(object):
                                       callback
             """
             # Extract the fields which are of the expected type
-            obj = {obj_field: factory_fn(self, event[obj_field])
-                   for obj_field in obj_fields
-                   if event.get(obj_field)}
+            obj = {
+                obj_field: factory_fn(self, event[obj_field])
+                for obj_field in obj_fields
+                if event.get(obj_field)
+            }
             # If there's only one field in the schema, just pass that along
             if len(obj_fields) == 1:
                 if obj:
@@ -230,16 +245,14 @@ class Client(object):
                     obj = None
             event_cb(obj, event, *args, **kwargs)
 
-        return self.on_event(event_type, extract_objects,
-                             *args,
-                             **kwargs)
+        return self.on_event(event_type, extract_objects, *args, **kwargs)
 
     def on_application_registered(self, application_name, fn, *args, **kwargs):
         """Register callback for application registered events
 
         :param application_name: String name of the stasis application
         :param fn: Callback function
-        :type  fn: (*args, **kwargs) -> None
+        :type  fn: (\\*args, \\**kwargs) -> None
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
@@ -250,7 +263,7 @@ class Client(object):
 
         :param application_name: String name of the stasis application
         :param fn: Callback function
-        :type  fn: (*args, **kwargs) -> None
+        :type  fn: (\\*args, \\**kwargs) -> None
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
@@ -265,8 +278,7 @@ class Client(object):
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
-        return self.on_object_event(event_type, fn, Channel, 'Channel',
-                                    *args, **kwargs)
+        return self.on_object_event(event_type, fn, Channel, 'Channel', *args, **kwargs)
 
     def on_bridge_event(self, event_type, fn, *args, **kwargs):
         """Register callback for Bridge related events
@@ -277,8 +289,7 @@ class Client(object):
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
-        return self.on_object_event(event_type, fn, Bridge, 'Bridge',
-                                    *args, **kwargs)
+        return self.on_object_event(event_type, fn, Bridge, 'Bridge', *args, **kwargs)
 
     def on_playback_event(self, event_type, fn, *args, **kwargs):
         """Register callback for Playback related events
@@ -289,32 +300,33 @@ class Client(object):
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
-        return self.on_object_event(event_type, fn, Playback, 'Playback',
-                                    *args, **kwargs)
+        return self.on_object_event(event_type, fn, Playback, 'Playback', *args, **kwargs)
 
     def on_live_recording_event(self, event_type, fn, *args, **kwargs):
         """Register callback for LiveRecording related events
 
         :param event_type: String name of the event to register for.
         :param fn: Callback function
-        :type  fn: (LiveRecording, dict) -> None or (list[LiveRecording], dict) -> None
+        :type fn: (LiveRecording, dict) -> None or (list[LiveRecording], dict) -> None
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
-        return self.on_object_event(event_type, fn, LiveRecording,
-                                    'LiveRecording', *args, **kwargs)
+        return self.on_object_event(
+            event_type, fn, LiveRecording, 'LiveRecording', *args, **kwargs
+        )
 
     def on_stored_recording_event(self, event_type, fn, *args, **kwargs):
         """Register callback for StoredRecording related events
 
         :param event_type: String name of the event to register for.
         :param fn: Callback function
-        :type  fn: (StoredRecording, dict) -> None or (list[StoredRecording], dict) -> None
+        :type fn: (StoredRecording, dict) -> None or (list[StoredRecording], dict) -> None
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
-        return self.on_object_event(event_type, fn, StoredRecording,
-                                    'StoredRecording', *args, **kwargs)
+        return self.on_object_event(
+            event_type, fn, StoredRecording, 'StoredRecording', *args, **kwargs
+        )
 
     def on_endpoint_event(self, event_type, fn, *args, **kwargs):
         """Register callback for Endpoint related events
@@ -325,8 +337,7 @@ class Client(object):
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
-        return self.on_object_event(event_type, fn, Endpoint, 'Endpoint',
-                                    *args, **kwargs)
+        return self.on_object_event(event_type, fn, Endpoint, 'Endpoint', *args, **kwargs)
 
     def on_device_state_event(self, event_type, fn, *args, **kwargs):
         """Register callback for DeviceState related events
@@ -337,8 +348,9 @@ class Client(object):
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
-        return self.on_object_event(event_type, fn, DeviceState, 'DeviceState',
-                                    *args, **kwargs)
+        return self.on_object_event(
+            event_type, fn, DeviceState, 'DeviceState', *args, **kwargs
+        )
 
     def on_sound_event(self, event_type, fn, *args, **kwargs):
         """Register callback for Sound related events
@@ -349,6 +361,4 @@ class Client(object):
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
-        return self.on_object_event(event_type, fn, Sound, 'Sound',
-                                    *args, **kwargs)
-
+        return self.on_object_event(event_type, fn, Sound, 'Sound', *args, **kwargs)

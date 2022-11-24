@@ -1,0 +1,2 @@
+six
+swaggerpy @ git+https://github.com/VCTLabs/swaggerpy.git#be1d3384a0f510bdd1a2c946cc8ad2fc91d1befe
