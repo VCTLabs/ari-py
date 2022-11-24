@@ -252,7 +252,7 @@ class Client(object):
 
         :param application_name: String name of the stasis application
         :param fn: Callback function
-        :type  fn: (*args, **kwargs) -> None
+        :type  fn: (\\*args, \\**kwargs) -> None
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
@@ -263,7 +263,7 @@ class Client(object):
 
         :param application_name: String name of the stasis application
         :param fn: Callback function
-        :type  fn: (*args, **kwargs) -> None
+        :type  fn: (\\*args, \\**kwargs) -> None
         :param args: Arguments to pass to fn
         :param kwargs: Keyword arguments to pass to fn
         """
