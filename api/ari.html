@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ari package &mdash; ari-py 0.6.1.dev5 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ari.client module" href="ari.client.html" />
+    <link rel="prev" title="ari" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> ari-py
+          </a>
+              <div class="version">
+                0.6.1.dev5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#development">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ari</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ari package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ari.client.html">ari.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ari.exceptions.html">ari.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ari.model.html">ari.model module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-ari">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ari.connect"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">0.2.3 (2017-08-28)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html#id2">0.2.1 (2016-06-09)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html#id3">0.2.0 (2016-04-20)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html#id4">0.1.3 (2014-09-08)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html#id5">0.1.2 (2014-08-12)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html#id6">0.1.1 (2013-10-28)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html#id7">0.1.0 (2013-10-28)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ari-py</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">ari</a></li>
+      <li class="breadcrumb-item active">ari package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/ari.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ari-package">
+<h1>ari package<a class="headerlink" href="#ari-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ari.client.html">ari.client module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ari.client.html#ari.client.Client"><code class="docutils literal notranslate"><span class="pre">Client</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.close"><code class="docutils literal notranslate"><span class="pre">Client.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.get_repo"><code class="docutils literal notranslate"><span class="pre">Client.get_repo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_application_deregistered"><code class="docutils literal notranslate"><span class="pre">Client.on_application_deregistered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_application_registered"><code class="docutils literal notranslate"><span class="pre">Client.on_application_registered()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_bridge_event"><code class="docutils literal notranslate"><span class="pre">Client.on_bridge_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_channel_event"><code class="docutils literal notranslate"><span class="pre">Client.on_channel_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_device_state_event"><code class="docutils literal notranslate"><span class="pre">Client.on_device_state_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_endpoint_event"><code class="docutils literal notranslate"><span class="pre">Client.on_endpoint_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_event"><code class="docutils literal notranslate"><span class="pre">Client.on_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_live_recording_event"><code class="docutils literal notranslate"><span class="pre">Client.on_live_recording_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_object_event"><code class="docutils literal notranslate"><span class="pre">Client.on_object_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_playback_event"><code class="docutils literal notranslate"><span class="pre">Client.on_playback_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_sound_event"><code class="docutils literal notranslate"><span class="pre">Client.on_sound_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_stasis_event"><code class="docutils literal notranslate"><span class="pre">Client.on_stasis_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.on_stored_recording_event"><code class="docutils literal notranslate"><span class="pre">Client.on_stored_recording_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.client.html#ari.client.Client.run"><code class="docutils literal notranslate"><span class="pre">Client.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ari.exceptions.html">ari.exceptions module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ari.exceptions.html#ari.exceptions.ARIException"><code class="docutils literal notranslate"><span class="pre">ARIException</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ari.exceptions.html#ari.exceptions.ARIHTTPError"><code class="docutils literal notranslate"><span class="pre">ARIHTTPError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ari.exceptions.html#ari.exceptions.ARINotFound"><code class="docutils literal notranslate"><span class="pre">ARINotFound</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ari.exceptions.html#ari.exceptions.ARINotInStasis"><code class="docutils literal notranslate"><span class="pre">ARINotInStasis</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ari.exceptions.html#ari.exceptions.ARIServerError"><code class="docutils literal notranslate"><span class="pre">ARIServerError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ari.exceptions.html#ari.exceptions.ARIServerUnavailable"><code class="docutils literal notranslate"><span class="pre">ARIServerUnavailable</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ari.model.html">ari.model module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.BaseObject"><code class="docutils literal notranslate"><span class="pre">BaseObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.BaseObject.id_generator"><code class="docutils literal notranslate"><span class="pre">BaseObject.id_generator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.BaseObject.on_event"><code class="docutils literal notranslate"><span class="pre">BaseObject.on_event()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.Bridge"><code class="docutils literal notranslate"><span class="pre">Bridge</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.Bridge.id_generator"><code class="docutils literal notranslate"><span class="pre">Bridge.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.Channel"><code class="docutils literal notranslate"><span class="pre">Channel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.Channel.id_generator"><code class="docutils literal notranslate"><span class="pre">Channel.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.DefaultObjectIdGenerator"><code class="docutils literal notranslate"><span class="pre">DefaultObjectIdGenerator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.DefaultObjectIdGenerator.get_params"><code class="docutils literal notranslate"><span class="pre">DefaultObjectIdGenerator.get_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.DefaultObjectIdGenerator.id_as_str"><code class="docutils literal notranslate"><span class="pre">DefaultObjectIdGenerator.id_as_str()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.DeviceState"><code class="docutils literal notranslate"><span class="pre">DeviceState</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.DeviceState.id_generator"><code class="docutils literal notranslate"><span class="pre">DeviceState.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.Endpoint"><code class="docutils literal notranslate"><span class="pre">Endpoint</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.Endpoint.id_generator"><code class="docutils literal notranslate"><span class="pre">Endpoint.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.EndpointIdGenerator"><code class="docutils literal notranslate"><span class="pre">EndpointIdGenerator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.EndpointIdGenerator.get_params"><code class="docutils literal notranslate"><span class="pre">EndpointIdGenerator.get_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.EndpointIdGenerator.id_as_str"><code class="docutils literal notranslate"><span class="pre">EndpointIdGenerator.id_as_str()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.LiveRecording"><code class="docutils literal notranslate"><span class="pre">LiveRecording</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.LiveRecording.id_generator"><code class="docutils literal notranslate"><span class="pre">LiveRecording.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.Mailbox"><code class="docutils literal notranslate"><span class="pre">Mailbox</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.Mailbox.id_generator"><code class="docutils literal notranslate"><span class="pre">Mailbox.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.ObjectIdGenerator"><code class="docutils literal notranslate"><span class="pre">ObjectIdGenerator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.ObjectIdGenerator.get_params"><code class="docutils literal notranslate"><span class="pre">ObjectIdGenerator.get_params()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.ObjectIdGenerator.id_as_str"><code class="docutils literal notranslate"><span class="pre">ObjectIdGenerator.id_as_str()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.Playback"><code class="docutils literal notranslate"><span class="pre">Playback</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.Playback.id_generator"><code class="docutils literal notranslate"><span class="pre">Playback.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.Repository"><code class="docutils literal notranslate"><span class="pre">Repository</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.Sound"><code class="docutils literal notranslate"><span class="pre">Sound</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.Sound.id_generator"><code class="docutils literal notranslate"><span class="pre">Sound.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.StoredRecording"><code class="docutils literal notranslate"><span class="pre">StoredRecording</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ari.model.html#ari.model.StoredRecording.id_generator"><code class="docutils literal notranslate"><span class="pre">StoredRecording.id_generator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ari.model.html#ari.model.promote"><code class="docutils literal notranslate"><span class="pre">promote()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-ari">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ari" title="Permalink to this heading"></a></h2>
+<p>ARI client library</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ari.connect">
+<span class="sig-prename descclassname"><span class="pre">ari.</span></span><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ari.html#connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ari.connect" title="Permalink to this definition"></a></dt>
+<dd><p>Helper method for easily connecting to ARI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_url</strong> – Base URL for Asterisk HTTP server (<a class="reference external" href="http://localhost:8088/">http://localhost:8088/</a>)</p></li>
+<li><p><strong>username</strong> – ARI username</p></li>
+<li><p><strong>password</strong> – ARI password.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="ari" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ari.client.html" class="btn btn-neutral float-right" title="ari.client module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

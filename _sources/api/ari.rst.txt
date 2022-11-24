@@ -1,0 +1,20 @@
+ari package
+===========
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   ari.client
+   ari.exceptions
+   ari.model
+
+Module contents
+---------------
+
+.. automodule:: ari
+   :members:
+   :undoc-members:
+   :show-inheritance:

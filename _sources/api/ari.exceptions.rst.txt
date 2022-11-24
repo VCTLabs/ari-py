@@ -1,0 +1,7 @@
+ari.exceptions module
+=====================
+
+.. automodule:: ari.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:

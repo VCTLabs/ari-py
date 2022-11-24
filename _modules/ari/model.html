@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ari.model &mdash; ari-py 0.6.1.dev5 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> ari-py
+          </a>
+              <div class="version">
+                0.6.1.dev5
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#development">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">ari</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">0.2.3 (2017-08-28)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html#id2">0.2.1 (2016-06-09)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html#id3">0.2.0 (2016-04-20)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html#id4">0.1.3 (2014-09-08)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html#id5">0.1.2 (2014-08-12)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html#id6">0.1.1 (2013-10-28)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html#id7">0.1.0 (2013-10-28)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ari-py</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../ari.html">ari</a></li>
+      <li class="breadcrumb-item active">ari.model</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ari.model</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Model for mapping ARI Swagger resources and operations into objects.</span>
+
+<span class="sd">The API is modeled into the Repository pattern, as you would find in Domain</span>
+<span class="sd">Driven Design.</span>
+
+<span class="sd">Each Swagger Resource (a.k.a. API declaration) is mapped into a Repository</span>
+<span class="sd">object, which has the non-instance specific operations (just like what you</span>
+<span class="sd">would find in a repository object).</span>
+
+<span class="sd">Responses from operations are mapped into first-class objects, which themselves</span>
+<span class="sd">have methods which map to instance specific operations (just like what you</span>
+<span class="sd">would find in a domain object).</span>
+
+<span class="sd">The first-class objects also have &#39;on_event&#39; methods, which can subscribe to</span>
+<span class="sd">Stasis events relating to that object.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exceptions</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_enrich_exceptions</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+    <span class="n">http_errors</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">404</span><span class="p">:</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ARINotFound</span><span class="p">,</span>
+        <span class="mi">409</span><span class="p">:</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ARINotInStasis</span><span class="p">,</span>
+        <span class="mi">500</span><span class="p">:</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ARIServerError</span><span class="p">,</span>
+        <span class="mi">503</span><span class="p">:</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ARIServerUnavailable</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">exception_class</span> <span class="o">=</span> <span class="n">http_errors</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
+            <span class="k">raise</span> <span class="n">exception_class</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ARIException</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">decorator</span>
+
+
+<div class="viewcode-block" id="Repository"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Repository">[docs]</a><span class="k">class</span> <span class="nc">Repository</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ARI repository.</span>
+
+<span class="sd">    This repository maps to an ARI Swagger resource. The operations on the</span>
+<span class="sd">    Swagger resource are mapped to methods on this object, using the</span>
+<span class="sd">    operation&#39;s nickname.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param name:    Repository name. Maps to the basename of the resource&#39;s</span>
+<span class="sd">                    .json file</span>
+<span class="sd">    :param resource:    Associated Swagger resource.</span>
+<span class="sd">    :type  resource:    swaggerpy.client.Resource</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="n">resource</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;Repository(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Maps resource operations to methods on this object.</span>
+
+<span class="sd">        :param item: Item name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">oper</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">callable</span><span class="p">(</span><span class="n">oper</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%r</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
+
+        <span class="c1"># The returned function wraps the underlying operation, promoting the</span>
+        <span class="c1"># received HTTP response to a first class object.</span>
+        <span class="k">return</span> <span class="n">_enrich_exceptions</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">promote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">oper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">oper</span><span class="o">.</span><span class="n">json</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ObjectIdGenerator"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.ObjectIdGenerator">[docs]</a><span class="k">class</span> <span class="nc">ObjectIdGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interface for extracting identifying information from an object&#39;s JSON</span>
+<span class="sd">    representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ObjectIdGenerator.get_params"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.ObjectIdGenerator.get_params">[docs]</a>    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_json</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the paramater values for specifying this object in a query.</span>
+
+<span class="sd">        :param obj_json: Instance data.</span>
+<span class="sd">        :type  obj_json: dict</span>
+<span class="sd">        :return: Dictionary with paramater names and values</span>
+<span class="sd">        :rtype:  dict of str, str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ObjectIdGenerator.id_as_str"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.ObjectIdGenerator.id_as_str">[docs]</a>    <span class="k">def</span> <span class="nf">id_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_json</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets a single string identifying an object.</span>
+
+<span class="sd">        :param obj_json: Instance data.</span>
+<span class="sd">        :type  obj_json: dict</span>
+<span class="sd">        :return: Id string.</span>
+<span class="sd">        :rtype:  str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># noinspection PyDocstring</span>
+<div class="viewcode-block" id="DefaultObjectIdGenerator"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.DefaultObjectIdGenerator">[docs]</a><span class="k">class</span> <span class="nc">DefaultObjectIdGenerator</span><span class="p">(</span><span class="n">ObjectIdGenerator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Id generator that works for most of our objects.</span>
+
+<span class="sd">    :param param_name:  Name of the parameter to specify in queries.</span>
+<span class="sd">    :param id_field:    Name of the field to specify in JSON.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">id_field</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_name</span> <span class="o">=</span> <span class="n">param_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_field</span> <span class="o">=</span> <span class="n">id_field</span>
+
+<div class="viewcode-block" id="DefaultObjectIdGenerator.get_params"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.DefaultObjectIdGenerator.get_params">[docs]</a>    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_json</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">param_name</span><span class="p">:</span> <span class="n">obj_json</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id_field</span><span class="p">]}</span></div>
+
+<div class="viewcode-block" id="DefaultObjectIdGenerator.id_as_str"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.DefaultObjectIdGenerator.id_as_str">[docs]</a>    <span class="k">def</span> <span class="nf">id_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_json</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj_json</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id_field</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="BaseObject"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.BaseObject">[docs]</a><span class="k">class</span> <span class="nc">BaseObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for ARI domain objects.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param resource:    Associated Swagger resource.</span>
+<span class="sd">    :type  resource:    swaggerpy.client.Resource</span>
+<span class="sd">    :param as_json: JSON representation of this object instance.</span>
+<span class="sd">    :type  as_json: dict</span>
+<span class="sd">    :param event_reg:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">ObjectIdGenerator</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">as_json</span><span class="p">,</span> <span class="n">event_reg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="n">resource</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">json</span> <span class="o">=</span> <span class="n">as_json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_generator</span><span class="o">.</span><span class="n">id_as_str</span><span class="p">(</span><span class="n">as_json</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_reg</span> <span class="o">=</span> <span class="n">event_reg</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Promote resource operations related to a single resource to methods</span>
+<span class="sd">        on this class.</span>
+
+<span class="sd">        :param item:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">oper</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">callable</span><span class="p">(</span><span class="n">oper</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="s1">&#39;json&#39;</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">%r</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">%r</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">enrich_operation</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Enriches an operation by specifying parameters specifying this</span>
+<span class="sd">            object&#39;s id (i.e., channelId=self.id), and promotes HTTP response</span>
+<span class="sd">            to a first-class object.</span>
+
+<span class="sd">            :param kwargs: Operation parameters</span>
+<span class="sd">            :return: First class object mapped from HTTP response.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Add id to param list</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id_generator</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">promote</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="n">oper</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">oper</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_enrich_exceptions</span><span class="p">(</span><span class="n">enrich_operation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseObject.on_event"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.BaseObject.on_event">[docs]</a>    <span class="k">def</span> <span class="nf">on_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_type</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register event callbacks for this specific domain object.</span>
+
+<span class="sd">        :param event_type: Type of event to register for.</span>
+<span class="sd">        :type  event_type: str</span>
+<span class="sd">        :param fn:  Callback function for events.</span>
+<span class="sd">        :type  fn:  (object, dict) -&gt; None</span>
+<span class="sd">        :param args: Arguments to pass to fn</span>
+<span class="sd">        :param kwargs: Keyword arguments to pass to fn</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">fn_filter</span><span class="p">(</span><span class="n">objects</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Filter received events for this object.</span>
+
+<span class="sd">            :param objects: Objects found in this event.</span>
+<span class="sd">            :param event: Event.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objects</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">objects</span><span class="o">.</span><span class="n">values</span><span class="p">()]:</span>
+                    <span class="n">fn</span><span class="p">(</span><span class="n">objects</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">objects</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+                    <span class="n">fn</span><span class="p">(</span><span class="n">objects</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_reg</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Event callback registration called on object with no events&quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_reg</span><span class="p">(</span><span class="n">event_type</span><span class="p">,</span> <span class="n">fn_filter</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Channel"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Channel">[docs]</a><span class="k">class</span> <span class="nc">Channel</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param channel_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">DefaultObjectIdGenerator</span><span class="p">(</span><span class="s1">&#39;channelId&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">channel_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Channel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">channels</span><span class="p">,</span> <span class="n">channel_json</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">on_channel_event</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bridge"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Bridge">[docs]</a><span class="k">class</span> <span class="nc">Bridge</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param bridge_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">DefaultObjectIdGenerator</span><span class="p">(</span><span class="s1">&#39;bridgeId&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">bridge_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Bridge</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">bridges</span><span class="p">,</span> <span class="n">bridge_json</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">on_bridge_event</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Playback"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Playback">[docs]</a><span class="k">class</span> <span class="nc">Playback</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param playback_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">DefaultObjectIdGenerator</span><span class="p">(</span><span class="s1">&#39;playbackId&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">playback_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Playback</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">playbacks</span><span class="p">,</span> <span class="n">playback_json</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">on_playback_event</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LiveRecording"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.LiveRecording">[docs]</a><span class="k">class</span> <span class="nc">LiveRecording</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client: ARI client</span>
+<span class="sd">    :type  client: client.Client</span>
+<span class="sd">    :param recording_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">DefaultObjectIdGenerator</span><span class="p">(</span><span class="s1">&#39;recordingName&#39;</span><span class="p">,</span> <span class="n">id_field</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">recording_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LiveRecording</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">recordings</span><span class="p">,</span>
+            <span class="n">recording_json</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">on_live_recording_event</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StoredRecording"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.StoredRecording">[docs]</a><span class="k">class</span> <span class="nc">StoredRecording</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client: ARI client</span>
+<span class="sd">    :type  client: client.Client</span>
+<span class="sd">    :param recording_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">DefaultObjectIdGenerator</span><span class="p">(</span><span class="s1">&#39;recordingName&#39;</span><span class="p">,</span> <span class="n">id_field</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">recording_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StoredRecording</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">recordings</span><span class="p">,</span>
+            <span class="n">recording_json</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">on_stored_recording_event</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<span class="c1"># noinspection PyDocstring</span>
+<div class="viewcode-block" id="EndpointIdGenerator"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.EndpointIdGenerator">[docs]</a><span class="k">class</span> <span class="nc">EndpointIdGenerator</span><span class="p">(</span><span class="n">ObjectIdGenerator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Id generator for endpoints, because they are weird.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EndpointIdGenerator.get_params"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.EndpointIdGenerator.get_params">[docs]</a>    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_json</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;tech&#39;</span><span class="p">:</span> <span class="n">obj_json</span><span class="p">[</span><span class="s1">&#39;technology&#39;</span><span class="p">],</span> <span class="s1">&#39;resource&#39;</span><span class="p">:</span> <span class="n">obj_json</span><span class="p">[</span><span class="s1">&#39;resource&#39;</span><span class="p">]}</span></div>
+
+<div class="viewcode-block" id="EndpointIdGenerator.id_as_str"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.EndpointIdGenerator.id_as_str">[docs]</a>    <span class="k">def</span> <span class="nf">id_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_json</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%(tech)s</span><span class="s2">/</span><span class="si">%(resource)s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="n">obj_json</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Endpoint"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Endpoint">[docs]</a><span class="k">class</span> <span class="nc">Endpoint</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param endpoint_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">EndpointIdGenerator</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">endpoint_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Endpoint</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">endpoints</span><span class="p">,</span> <span class="n">endpoint_json</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">on_endpoint_event</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DeviceState"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.DeviceState">[docs]</a><span class="k">class</span> <span class="nc">DeviceState</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param endpoint_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">DefaultObjectIdGenerator</span><span class="p">(</span><span class="s1">&#39;deviceName&#39;</span><span class="p">,</span> <span class="n">id_field</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">device_state_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DeviceState</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">deviceStates</span><span class="p">,</span>
+            <span class="n">device_state_json</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">on_device_state_event</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Sound"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Sound">[docs]</a><span class="k">class</span> <span class="nc">Sound</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param sound_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">DefaultObjectIdGenerator</span><span class="p">(</span><span class="s1">&#39;soundId&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">sound_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Sound</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">sounds</span><span class="p">,</span> <span class="n">sound_json</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">on_sound_event</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Mailbox"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Mailbox">[docs]</a><span class="k">class</span> <span class="nc">Mailbox</span><span class="p">(</span><span class="n">BaseObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;First class object API.</span>
+
+<span class="sd">    :param client:       ARI client.</span>
+<span class="sd">    :type  client:       client.Client</span>
+<span class="sd">    :param mailbox_json: Instance data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">id_generator</span> <span class="o">=</span> <span class="n">DefaultObjectIdGenerator</span><span class="p">(</span><span class="s1">&#39;mailboxName&#39;</span><span class="p">,</span> <span class="n">id_field</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">mailbox_json</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Mailbox</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span> <span class="n">client</span><span class="o">.</span><span class="n">swagger</span><span class="o">.</span><span class="n">mailboxes</span><span class="p">,</span> <span class="n">mailbox_json</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="promote"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.promote">[docs]</a><span class="k">def</span> <span class="nf">promote</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">operation_json</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Promote a response from the request&#39;s HTTP response to a first class</span>
+<span class="sd">     object.</span>
+
+<span class="sd">    :param client:  ARI client.</span>
+<span class="sd">    :type  client:  client.Client</span>
+<span class="sd">    :param resp:    HTTP resonse.</span>
+<span class="sd">    :type  resp:    requests.Response</span>
+<span class="sd">    :param operation_json: JSON model from Swagger API.</span>
+<span class="sd">    :type  operation_json: dict</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+    <span class="n">response_class</span> <span class="o">=</span> <span class="n">operation_json</span><span class="p">[</span><span class="s1">&#39;responseClass&#39;</span><span class="p">]</span>
+    <span class="n">is_list</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;List</span><span class="se">\\</span><span class="s1">[(.*)</span><span class="se">\\</span><span class="s1">]&#39;&#39;&#39;</span><span class="p">,</span> <span class="n">response_class</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+        <span class="n">response_class</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">is_list</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">CLASS_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">response_class</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">factory</span><span class="p">:</span>
+        <span class="n">resp_json</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">is_list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">factory</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">resp_json</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">factory</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">resp_json</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">no_content</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No mapping for </span><span class="si">%s</span><span class="s2">; returning JSON&quot;</span> <span class="o">%</span> <span class="n">response_class</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+
+
+<span class="n">CLASS_MAP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Bridge&#39;</span><span class="p">:</span> <span class="n">Bridge</span><span class="p">,</span>
+    <span class="s1">&#39;Channel&#39;</span><span class="p">:</span> <span class="n">Channel</span><span class="p">,</span>
+    <span class="s1">&#39;Endpoint&#39;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">,</span>
+    <span class="s1">&#39;Playback&#39;</span><span class="p">:</span> <span class="n">Playback</span><span class="p">,</span>
+    <span class="s1">&#39;LiveRecording&#39;</span><span class="p">:</span> <span class="n">LiveRecording</span><span class="p">,</span>
+    <span class="s1">&#39;StoredRecording&#39;</span><span class="p">:</span> <span class="n">StoredRecording</span><span class="p">,</span>
+    <span class="s1">&#39;Mailbox&#39;</span><span class="p">:</span> <span class="n">Mailbox</span><span class="p">,</span>
+    <span class="s1">&#39;DeviceState&#39;</span><span class="p">:</span> <span class="n">DeviceState</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

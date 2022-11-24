@@ -1,0 +1,7 @@
+ari.client module
+=================
+
+.. automodule:: ari.client
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+ari.model module
+================
+
+.. automodule:: ari.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
