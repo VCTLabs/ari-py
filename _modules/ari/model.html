@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ari.model &mdash; ari-py 0.6.1.dev5 documentation</title>
+  <title>ari.model &mdash; ari-py 0.6.1.dev9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -29,7 +29,7 @@
             <a href="../../index.html" class="icon icon-home"> ari-py
           </a>
               <div class="version">
-                0.6.1.dev5
+                0.6.1.dev9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -120,19 +120,19 @@
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">exception_class</span> <span class="o">=</span> <span class="n">http_errors</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">e</span>
-            <span class="k">raise</span> <span class="n">exception_class</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ARIException</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="n">exception_class</span> <span class="o">=</span> <span class="n">http_errors</span><span class="p">[</span><span class="n">err</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">err</span> <span class="kn">from</span> <span class="nn">exc</span>
+            <span class="k">raise</span> <span class="n">exception_class</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ARIException</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
     <span class="k">return</span> <span class="n">decorator</span>
 
 
-<div class="viewcode-block" id="Repository"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Repository">[docs]</a><span class="k">class</span> <span class="nc">Repository</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Repository"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.Repository">[docs]</a><span class="k">class</span> <span class="nc">Repository</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;ARI repository.</span>
 
 <span class="sd">    This repository maps to an ARI Swagger resource. The operations on the</span>
@@ -171,7 +171,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ObjectIdGenerator"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.ObjectIdGenerator">[docs]</a><span class="k">class</span> <span class="nc">ObjectIdGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ObjectIdGenerator"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.ObjectIdGenerator">[docs]</a><span class="k">class</span> <span class="nc">ObjectIdGenerator</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Interface for extracting identifying information from an object&#39;s JSON</span>
 <span class="sd">    representation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -216,7 +216,7 @@
         <span class="k">return</span> <span class="n">obj_json</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id_field</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="BaseObject"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.BaseObject">[docs]</a><span class="k">class</span> <span class="nc">BaseObject</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseObject"><a class="viewcode-back" href="../../api/ari.model.html#ari.model.BaseObject">[docs]</a><span class="k">class</span> <span class="nc">BaseObject</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Base class for ARI domain objects.</span>
 
 <span class="sd">    :param client:  ARI client.</span>
