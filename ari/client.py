@@ -8,8 +8,8 @@ import json
 import logging
 from collections import defaultdict
 
-import six.moves.urllib as urllib
 import swaggerpy.client
+from six.moves import urllib
 
 from .model import (
     Bridge,
@@ -26,7 +26,7 @@ from .model import (
 log = logging.getLogger(__name__)
 
 
-class Client(object):
+class Client:
     """ARI Client object.
 
     :param base_url: Base URL for accessing Asterisk.

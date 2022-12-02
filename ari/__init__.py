@@ -4,8 +4,8 @@
 
 """ARI client library"""
 
-import six.moves.urllib as urllib
 import swaggerpy.http_client
+from six.moves import urllib
 
 from ._version import __version__
 from .client import Client
