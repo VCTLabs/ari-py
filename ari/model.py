@@ -37,19 +37,19 @@ def _enrich_exceptions(function, client):
     def decorator(**kwargs):
         try:
             return function(**kwargs)
-        except requests.HTTPError as e:
+        except requests.HTTPError as err:
             try:
-                exception_class = http_errors[e.response.status_code]
-            except KeyError:
-                raise e
-            raise exception_class(client, e)
-        except requests.RequestException as e:
-            raise exceptions.ARIException(client, e)
+                exception_class = http_errors[err.response.status_code]
+            except KeyError as exc:
+                raise err from exc
+            raise exception_class(client, err) from err
+        except requests.RequestException as err:
+            raise exceptions.ARIException(client, err) from err
 
     return decorator
 
 
-class Repository(object):
+class Repository:
     """ARI repository.
 
     This repository maps to an ARI Swagger resource. The operations on the
@@ -88,7 +88,7 @@ class Repository(object):
         )
 
 
-class ObjectIdGenerator(object):
+class ObjectIdGenerator:
     """Interface for extracting identifying information from an object's JSON
     representation.
     """
@@ -133,7 +133,7 @@ class DefaultObjectIdGenerator(ObjectIdGenerator):
         return obj_json[self.id_field]
 
 
-class BaseObject(object):
+class BaseObject:
     """Base class for ARI domain objects.
 
     :param client:  ARI client.

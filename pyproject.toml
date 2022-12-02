@@ -16,30 +16,15 @@ addopts = "--strict-markers"
 markers = "subscript"
 
 [tool.coverage.run]
-branch = true
-source = [
-    "ari",
-    ".tox/py*/lib/python*/site-packages/ari",
-]
-omit = [
-    "ari_test",
-    ".tox",
-]
+plugins = ["covdefaults"]
 
-[tool.coverage.paths]
-source = ["ari"]
+#[tool.coverage.paths]
+#source = ["ari"]
 
 [tool.coverage.report]
-fail_under = 70
-show_missing = true
+fail_under = 80
 exclude_lines = [
     "def __repr__",
-    "pragma: no cover",
-    "raise NotImplementedError",
-    "raise AssertionError",
-    "if __name__ == .__main__.:",
-    "if typing.TYPE_CHECKING:",
-    "if TYPE_CHECKING:",
 ]
 
 [tool.black]
