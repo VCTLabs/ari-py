@@ -12,7 +12,7 @@ Welcome to the ari-py documentation!
     :maxdepth: 4
     :caption: Contents:
 
-    README.md
+    README
     api/modules
     changes
 
